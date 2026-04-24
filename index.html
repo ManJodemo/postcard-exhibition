@@ -1,0 +1,475 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+<title>Exhibition Postcard</title>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;1,400&family=EB+Garamond:ital,wght@0,400;1,400&display=swap" rel="stylesheet"/>
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  :root {
+    --cream: #f5f0e8;
+    --ink: #1a1612;
+    --rust: #8b3a1e;
+    --gold: #c9a84c;
+    --shadow: rgba(26,22,18,0.35);
+  }
+
+  html, body {
+    width: 100%; height: 100%;
+    overflow: hidden;
+    background: var(--cream);
+    font-family: 'EB Garamond', Georgia, serif;
+    color: var(--ink);
+    touch-action: none;
+    cursor: grab;
+  }
+
+  body::before {
+    content: '';
+    position: fixed; inset: 0;
+    background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.08'/%3E%3C/svg%3E");
+    pointer-events: none; z-index: 999; opacity: 0.4;
+  }
+
+  .bg-lines {
+    position: fixed; inset: 0; overflow: hidden; pointer-events: none;
+  }
+  .bg-lines::before, .bg-lines::after {
+    content: '';
+    position: absolute;
+    border: 1px solid rgba(139,58,30,0.12);
+    border-radius: 50%;
+  }
+  .bg-lines::before {
+    width: 120vmax; height: 120vmax;
+    top: -30vmax; left: -30vmax;
+  }
+  .bg-lines::after {
+    width: 80vmax; height: 80vmax;
+    bottom: -20vmax; right: -20vmax;
+  }
+
+  header {
+    position: fixed; top: 0; left: 0; right: 0;
+    padding: 18px 24px 0;
+    display: flex; justify-content: space-between; align-items: flex-start;
+    z-index: 100;
+  }
+  .exhibition-label {
+    font-family: 'Playfair Display', serif;
+    font-size: 10px;
+    letter-spacing: 0.25em;
+    text-transform: uppercase;
+    color: var(--rust);
+    opacity: 0.8;
+  }
+  .card-counter {
+    font-family: 'EB Garamond', serif;
+    font-size: 12px;
+    letter-spacing: 0.1em;
+    color: var(--ink);
+    opacity: 0.5;
+  }
+
+  .stage {
+    position: fixed; inset: 0;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 24px;
+    perspective: 1100px;
+  }
+
+  /* ---- 卡片尺寸加大，图片展示区域更宽 ---- */
+  .card-wrap {
+    position: relative;
+    width: min(94vw, 400px);       /* 原 min(88vw,340px) → 更宽 */
+    aspect-ratio: 3/2;
+    transform-style: preserve-3d;
+    will-change: transform;
+    filter: drop-shadow(0 28px 48px var(--shadow));
+    transition: filter 0.3s;
+    animation: cardIn 1s cubic-bezier(0.16,1,0.3,1) forwards;
+  }
+  .card-wrap.lifted {
+    filter: drop-shadow(0 40px 70px var(--shadow));
+  }
+
+  @keyframes cardIn {
+    from { opacity: 0; transform: translateY(40px) rotateX(8deg); }
+    to   { opacity: 1; transform: translateY(0) rotateX(0deg); }
+  }
+
+  .card-face {
+    position: absolute; inset: 0;
+    border-radius: 4px;
+    overflow: hidden;
+    backface-visibility: hidden;
+    -webkit-backface-visibility: hidden;
+  }
+
+  /* ---- Front face ---- */
+  .card-front {
+    background: var(--ink);
+    position: relative;
+  }
+
+  /* 图片铺满整张正面 */
+  .card-front .artwork {
+    position: absolute;
+    inset: 0;
+  }
+  .card-front .artwork img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+  }
+
+  /* caption 更薄，让图更突出 */
+  .card-front .caption {
+    position: absolute;
+    bottom: 0; left: 0; right: 0;
+    padding: 20px 16px 12px;       /* 原 28px 18px 16px → 更紧凑 */
+    background: linear-gradient(to top, rgba(0,0,0,0.78) 0%, transparent 100%);
+  }
+  .card-front .caption h2 {
+    font-family: 'Playfair Display', serif;
+    font-size: clamp(15px, 4.5vw, 20px);   /* 字号略微加大 */
+    color: #f5f0e8;
+    font-weight: 400;
+    line-height: 1.3;
+  }
+  .card-front .caption p {
+    font-family: 'EB Garamond', serif;
+    font-size: clamp(10px, 2.5vw, 12px);
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: var(--gold);
+    margin-top: 4px;
+    opacity: 0.9;
+  }
+
+  /* ---- Back face ---- */
+  .card-back {
+    background: #faf6ee;
+    transform: rotateY(180deg);
+    display: grid;
+    grid-template-columns: 1fr 1px 1fr;
+    grid-template-rows: 1fr auto;
+    border: 1px solid rgba(26,22,18,0.08);
+  }
+  .back-left {
+    padding: 18px 14px;
+    display: flex; flex-direction: column; gap: 10px;
+  }
+  .back-divider {
+    background: rgba(26,22,18,0.12);
+    margin: 12px 0;
+  }
+  .back-right {
+    padding: 14px 12px;
+    display: flex; flex-direction: column; justify-content: space-between;
+  }
+  .postcard-lines {
+    display: flex; flex-direction: column; gap: 9px; flex: 1;
+    margin-top: 4px;
+  }
+  .postcard-line {
+    height: 1px;
+    background: rgba(26,22,18,0.13);
+  }
+  .stamp-box {
+    width: 40px; height: 48px;
+    border: 1px solid rgba(26,22,18,0.2);
+    border-radius: 2px;
+    align-self: flex-start;
+    display: flex; align-items: center; justify-content: center;
+  }
+  .stamp-box-inner {
+    width: 28px; height: 36px;
+    border: 1px solid rgba(26,22,18,0.15);
+    background: linear-gradient(135deg, rgba(201,168,76,0.15), transparent);
+  }
+  .back-label {
+    font-family: 'Playfair Display', serif;
+    font-size: 7px;
+    letter-spacing: 0.3em;
+    text-transform: uppercase;
+    color: var(--rust);
+    opacity: 0.7;
+    margin-bottom: 6px;
+  }
+  .back-message {
+    font-family: 'EB Garamond', serif;
+    font-size: clamp(10px, 2.8vw, 12px);
+    line-height: 1.7;
+    color: var(--ink);
+    opacity: 0.8;
+  }
+  .back-signature {
+    font-family: 'Playfair Display', serif;
+    font-style: italic;
+    font-size: clamp(11px, 3vw, 13px);
+    color: var(--rust);
+    margin-top: 8px;
+  }
+  .back-bottom-bar {
+    grid-column: 1 / -1;
+    padding: 8px 14px;
+    border-top: 1px solid rgba(26,22,18,0.08);
+    display: flex; align-items: center; justify-content: space-between;
+  }
+  .back-series {
+    font-size: 8px;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: var(--ink); opacity: 0.3;
+  }
+  .back-stamp-text {
+    font-size: 8px;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    color: var(--rust); opacity: 0.5;
+  }
+
+  /* ---- Hint ---- */
+  .hint {
+    font-family: 'EB Garamond', serif;
+    font-style: italic;
+    font-size: 13px;
+    letter-spacing: 0.06em;
+    color: var(--ink);
+    opacity: 0;
+    animation: fadeHint 3s ease forwards;
+    text-align: center;
+  }
+  @keyframes fadeHint {
+    0%   { opacity: 0; transform: translateY(6px); }
+    20%  { opacity: 0.55; transform: translateY(0); }
+    70%  { opacity: 0.55; }
+    100% { opacity: 0; }
+  }
+
+  /* ---- Dots ---- */
+  .side-indicator {
+    position: fixed;
+    bottom: 22px; left: 50%;
+    transform: translateX(-50%);
+    display: flex; gap: 8px; align-items: center;
+    z-index: 100;
+  }
+  .dot {
+    width: 6px; height: 6px;
+    border-radius: 50%;
+    background: var(--ink);
+    opacity: 0.18;
+    transition: opacity 0.4s, transform 0.4s;
+  }
+  .dot.active {
+    opacity: 0.6;
+    transform: scale(1.4);
+  }
+
+  /* ---- Footer note：字号从 9px → 13px，opacity 0.22 → 0.42 ---- */
+  .footer-note {
+    position: fixed;
+    bottom: 42px; left: 0; right: 0;
+    text-align: center;
+    font-family: 'EB Garamond', serif;
+    font-size: 13px;               /* 原 9px */
+    letter-spacing: 0.16em;        /* 原 0.22em，稍收窄配合字号 */
+    color: var(--ink);
+    opacity: 0.42;                 /* 原 0.22，更清晰 */
+    pointer-events: none;
+  }
+
+  body { user-select: none; -webkit-user-select: none; }
+</style>
+</head>
+<body>
+
+<div class="bg-lines"></div>
+
+<header>
+  <div class="exhibition-label">Exhibition 2026</div>
+  <div class="card-counter" id="cardCounter">01 / 01</div>
+</header>
+
+<div class="stage">
+  <div class="card-wrap" id="cardWrap">
+
+    <!-- FRONT FACE -->
+    <div class="card-face card-front">
+      <div class="artwork">
+        <img src="last1.jpg" alt="artwork" />
+      </div>
+      <div class="caption">
+        <h2>抱朴&middot;见素</h2>
+        <p>路径的选择 从泥土到器物 &nbsp;&middot;&nbsp; 2026</p>
+      </div>
+    </div>
+
+    <!-- BACK FACE -->
+    <div class="card-face card-back">
+      <div class="back-left">
+        <div class="back-label">Artist Note</div>
+        <div class="back-message">
+          这本书记录的是本人在半年时间里的陶艺探索经历<br/>
+          展示作品与创作动机以及引发的自我思考<br/>
+          这是一条关于成长的路径。
+        </div>
+        <div class="back-signature">&mdash; HU FEN</div>
+      </div>
+      <div class="back-divider"></div>
+      <div class="back-right">
+        <div class="stamp-box"><div class="stamp-box-inner"></div></div>
+        <div class="postcard-lines">
+          <div class="postcard-line"></div>
+          <div class="postcard-line"></div>
+          <div class="postcard-line"></div>
+          <div class="postcard-line"></div>
+          <div class="postcard-line"></div>
+        </div>
+      </div>
+      <div class="back-bottom-bar">
+        <span class="back-series">Series No. 01 &mdash; Silence</span>
+        <span class="back-stamp-text">Art Fair 2026</span>
+      </div>
+    </div>
+
+  </div>
+
+  <div class="hint" id="hint">拖拽翻转明信片</div>
+</div>
+
+<div class="side-indicator">
+  <div class="dot active" id="dot0"></div>
+  <div class="dot" id="dot1"></div>
+</div>
+
+<div class="footer-note">
+  シンプルさに立ち返り、自己対話に取り組み、道と対話する。 2026 &nbsp;&middot;&nbsp; WABISABI
+</div>
+
+<script>
+(function () {
+  const wrap = document.getElementById('cardWrap');
+  const dot0 = document.getElementById('dot0');
+  const dot1 = document.getElementById('dot1');
+
+  let rotY = 0, rotX = 0;
+  let velY = 0, velX = 0;
+  let lastX = 0, lastY = 0;
+  let isDragging = false;
+  let isFlipped = false;
+  let rafId = null;
+
+  const DRAG_SENS = 0.55;
+  const TILT_MAX  = 22;
+  const FRICTION  = 0.88;
+  const SNAP_EASE = 0.1;
+
+  function applyTransform(y, x) {
+    wrap.style.transform = `rotateY(${y}deg) rotateX(${x}deg)`;
+  }
+
+  function getXY(e) {
+    const src = e.touches ? e.touches[0] : e;
+    return { x: src.clientX, y: src.clientY };
+  }
+
+  function onDown(e) {
+    e.preventDefault();
+    const { x, y } = getXY(e);
+    lastX = x; lastY = y;
+    isDragging = true;
+    velY = velX = 0;
+    wrap.classList.add('lifted');
+    cancelAnimationFrame(rafId);
+    document.body.style.cursor = 'grabbing';
+  }
+
+  function onMove(e) {
+    if (!isDragging) return;
+    e.preventDefault();
+    const { x, y } = getXY(e);
+    velY = (x - lastX) * DRAG_SENS;
+    velX = -(y - lastY) * DRAG_SENS * 0.5;
+    rotY += velY;
+    rotX = Math.max(-TILT_MAX, Math.min(TILT_MAX, rotX + velX));
+    lastX = x; lastY = y;
+    applyTransform(rotY, rotX);
+    updateFlipState();
+  }
+
+  function onUp() {
+    if (!isDragging) return;
+    isDragging = false;
+    wrap.classList.remove('lifted');
+    document.body.style.cursor = 'grab';
+    startInertia(Math.round(rotY / 180) * 180);
+  }
+
+  function updateFlipState() {
+    const n = ((rotY % 360) + 360) % 360;
+    const showing = (n >= 90 && n < 270);
+    if (showing !== isFlipped) {
+      isFlipped = showing;
+      dot0.classList.toggle('active', !isFlipped);
+      dot1.classList.toggle('active',  isFlipped);
+    }
+  }
+
+  function startInertia(target) {
+    function tick() {
+      if (isDragging) return;
+      velY *= FRICTION;
+      velX *= FRICTION;
+      rotY += velY;
+      rotX += velX;
+      const diff = target - rotY;
+      if (Math.abs(velY) < 0.5) rotY += diff * SNAP_EASE;
+      rotX += (0 - rotX) * SNAP_EASE;
+      rotX = Math.max(-TILT_MAX, Math.min(TILT_MAX, rotX));
+      applyTransform(rotY, rotX);
+      updateFlipState();
+      if (Math.abs(velY) > 0.05 || Math.abs(diff) > 0.2 || Math.abs(rotX) > 0.2) {
+        rafId = requestAnimationFrame(tick);
+      } else {
+        rotY = target; rotX = 0;
+        applyTransform(rotY, rotX);
+      }
+    }
+    rafId = requestAnimationFrame(tick);
+  }
+
+  /* Double-tap to flip */
+  let lastTap = 0;
+  wrap.addEventListener('click', function () {
+    const now = Date.now();
+    if (now - lastTap < 350) {
+      const target = isFlipped
+        ? Math.round(rotY / 180) * 180
+        : Math.round(rotY / 180) * 180 + 180;
+      velY = 8;
+      startInertia(target);
+    }
+    lastTap = now;
+  });
+
+  wrap.addEventListener('mousedown',  onDown, { passive: false });
+  wrap.addEventListener('touchstart', onDown, { passive: false });
+  document.addEventListener('mousemove', onMove, { passive: false });
+  document.addEventListener('touchmove', onMove, { passive: false });
+  document.addEventListener('mouseup',  onUp);
+  document.addEventListener('touchend', onUp);
+
+  setTimeout(() => { velY = 3; startInertia(0); }, 900);
+})();
+</script>
+</body>
+</html>
